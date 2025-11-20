@@ -20,8 +20,8 @@ These will plug into an existing **social media style platform**, moving it towa
 
 ## Source Applications
 
-- Backend source: `connect` / ads module  
-- Any additional ads-related logic from: `wavepods` (if relevant for podcast ads)
+- Backend source: `sngine` / ads module  
+
 
 We will **copy the necessary logic and structure** from these into:
 
