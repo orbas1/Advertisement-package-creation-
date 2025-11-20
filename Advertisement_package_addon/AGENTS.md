@@ -4,12 +4,12 @@
 
 Your goal is to create:
 
-1. A **Laravel package** (`advertisement_laravel_package`), and  
+1. A **Laravel package** (`advertisement_laravel_package`), and
 2. A **Flutter mobile addon package** (`advertisement_flutter_addon`),
 
 that together provide the **same advertisement functionality** on both:
 
-- The **Laravel backend / web app**, and  
+- The **Laravel backend / web app**, and
 - The **Flutter mobile app**.
 
 These will plug into an existing **social media style platform**, moving it towards a **LinkedIn-style professional network** with a full ads system.
@@ -20,12 +20,12 @@ These will plug into an existing **social media style platform**, moving it towa
 
 ## Source Applications
 
-- Backend source: `sngine` / ads module  
+- Backend source: `sngine` / ads module
 
 
 We will **copy the necessary logic and structure** from these into:
 
-- `advertisement_laravel_package` (Laravel package)  
+- `advertisement_laravel_package` (Laravel package)
 - `advertisement_flutter_addon` (Flutter addon package)
 
 The aim is **full feature parity** with the original ads functionality (campaigns, creatives, targeting, forecasting, etc.).
@@ -119,125 +119,58 @@ When extracting from the ads logic in `connect` / `wavepods`, ensure the followi
      - Targeting configuration screens.
      - Reporting/analytics views.
      - Forecast/simulation UI.
-   - Language files.
-   - Any asset stubs that need to be published from the package.
 
-7. **Admin Panel Entries**
-   - Admin menu entries and configuration for:
-     - Global ads moderation (review/approve/reject ads).
-     - Platform-wide ad settings and limits.
-     - Global keyword pricing and targeting rules.
-   - Admin controllers, views, and routes required to manage ads system-wide.
+7. **Routes**
+   - Web + API routes for all above features.
+   - Ensure proper middleware.
 
-8. **Frontend Views**
-   - User-facing views for advertisers:
-     - Create/manage campaigns and ads.
-     - Configure targeting, budgets, and schedules.
-     - View performance dashboards.
-   - Views for ad placements as needed (e.g. preview of how ads appear on feed/profile/search).
+8. **Services / Domain Logic**
+   - Forecasting/Simulation engines.
+   - Keyword planner pricing.
+   - Campaign checks (budget, schedule, approvals).
 
-9. **Assets**
-   - Any **non-binary** assets required (CSS, SCSS, SVG where applicable).
-   - Frontend resources supporting the ads UI (forms, tables, charts).
+9. **Testing / Docs**
+   - README with installation + usage instructions (Composer install, migrations, config publish, routes, etc.).
 
-10. **Language Translations**
-    - Language files used by the advertisement module (e.g. `resources/lang/en/advertisement.php`).
-    - Ensure all ads-related text strings are covered.
-
-11. **JavaScript**
-    - Any JS needed for interactive features such as:
-      - Live metrics charts.
-      - Dynamic targeting selectors.
-      - Simulation/forecast UI widgets.
-    - Extract and adapt JS from the original ads implementation where relevant.
-
-12. **Routes**
-    - Web routes:
-      - Advertiser dashboard and campaign management pages.
-      - Admin ads moderation/settings.
-    - API routes:
-      - Campaigns, creatives, targeting, placements.
-      - Metrics and reports.
-      - Forecast and simulation.
-    - These API routes will be consumed by the Flutter addon.
-
-13. **Services**
-    - Service classes for:
-      - Campaign lifecycle (status changes, budget enforcement).
-      - Bidding and pricing calculations (CPC, CPA, CPM/PPI).
-      - Metrics aggregation and reporting.
-      - Forecasting: reach/clicks/impressions/cost prediction.
-      - Simulation engine and checks (what-if scenarios).
-      - Keyword planner pricing logic.
-
-14. **Support**
-    - Helper functions.
-    - Enums, DTOs, traits, and other support classes used by the ads functionality, e.g.:
-      - `AdType`, `PricingModel`, `PlacementType`, `CampaignStatus`.
-
-15. **Service Provider**
-    - `AdvertisementServiceProvider.php`:
-      - Registers routes, migrations, views, translations, configs.
-      - Binds interfaces and services into the container where required.
-      - Handles publishing of config, views, assets, and language files.
-
-16. **Documentation**
-    - `README.md`:
-      - Installation steps (Composer + service provider).
-      - Configuration instructions (permissions, pricing models, limits).
-      - Summary of features (ads, campaigns, placements, targeting, metrics, forecast).
-      - Notes about required environment or dependencies (queues, cron jobs, etc.).
-
-> 🎯 Focus: The Laravel package must deliver **complete advertisement functionality** when installed into the host social platform.
+10. **Affiliate Upgrade (Web + Mobile)**
+    - Import Sngine affiliate hooks (init + payout flow) into the Laravel package.
+    - Surface matching affiliate support for the Flutter addon (referrals + payout flows) so both phone and web experience stay in sync.
+    - Document the upgrade expectations and endpoints.
 
 ---
 
-## Part 2 – Flutter Advertisement Addon (`advertisement_flutter_addon`)
+## Part 2 – Flutter Addon (`advertisement_flutter_addon`)
 
-We must:
+We need a Flutter package/addon that matches the Laravel package behaviour.
 
-1. Analyse any existing ads-related mobile/React Native flows (if available).  
-2. Replicate the same advertisement functionality in **Flutter**, as a modular **addon package**.  
-3. Ensure the Flutter addon connects to the **Laravel advertisement package API**.
+Key requirements:
 
-The Flutter addon must include:
+1. **Structure**
+   - `lib/advertisement_flutter_addon.dart` as main entry point.
+   - Separate directories for: models, repositories/providers, UI/screens, state management.
 
-1. **`pubspec.yaml`**
-   - Define this as a Flutter/Dart package.
-   - List dependencies (HTTP client, JSON serialization, state management, charts, etc.).
-   - Set the package name appropriately (e.g. `advertisement`).
+2. **Pages**
+   - Pages for:
+     - Ads dashboard.
+     - Campaign list + detail.
+     - Create/Edit ad creative.
+     - Targeting configuration.
+     - Ads analytics (metrics, reports, charts).
+     - Forecasting/simulation display.
+     - Keyword planner.
+   - These should mirror the Laravel functionality (fields, validations, flows).
 
-2. **Models**
-   - Dart models mirroring the Laravel API responses:
-     - Advertiser account.
-     - Campaign.
-     - Ad creative (text, banner, video, placement info).
-     - Targeting rules (gender, tags, keywords, country, location).
-     - Metrics (impressions, clicks, conversions, cost).
-     - Forecast/Simulation results.
-     - Keyword planner entries (keyword, expected CPC/CPA/CPM).
+3. **Models**
+   - Campaign, Creative, Placement, Targeting, Metrics/Results, Forecast results.
+   - Keyword pricing: CPC, CPA, CPM/PPI.
 
-3. **Pages**
-   - Flutter UI screens equivalent to the ads management flows, for example:
-     - Advertiser dashboard.
-     - Campaign list and detail screens.
-     - Create/edit campaign screen.
-     - Create/edit ad creative screen.
-     - Targeting configuration screen.
-     - Budget and schedule settings.
-     - Reports/analytics pages with metrics and charts.
-     - Forecast/simulation screens (reach planner, clicks/impressions/cost forecaster).
-
-4. **Services**
-   - API service client(s) to communicate with the Laravel advertisement package:
-     - Handle authentication (token, headers).
-     - Methods like:
-       - `fetchAdvertiserAccount()`
-       - `fetchCampaigns()`, `createCampaign()`, `updateCampaign()`
-       - `createAdCreative()`, `updateAdCreative()`
-       - `fetchMetrics(campaignId, ...)`
-       - `runForecast(params)`
-       - `getKeywordPricing(keyword, ...)`
+4. **Networking**
+   - Repositories/clients calling Laravel API endpoints, e.g.:
+     - `createCampaign()`, `updateCampaign()`
+     - `createAdCreative()`, `updateAdCreative()`
+     - `fetchMetrics(campaignId, ...)`
+     - `runForecast(params)`
+     - `getKeywordPricing(keyword, ...)`
      - All endpoints must match the Laravel routes provided by `advertisement_laravel_package`.
 
 5. **State**
@@ -352,7 +285,7 @@ Both the **Laravel package** and the **Flutter addon** must support the followin
 
 By following this document, the agent should:
 
-- Extract all necessary ads logic from `connect` / `wavepods` (backend and any mobile/client code).  
+- Extract all necessary ads logic from `connect` / `wavepods` (backend and any mobile/client code).
 - Rebuild them as:
   - A **modular Laravel advertisement package**, and
   - A **modular Flutter advertisement addon**,
