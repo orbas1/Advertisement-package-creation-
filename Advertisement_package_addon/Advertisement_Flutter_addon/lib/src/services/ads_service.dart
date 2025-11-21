@@ -14,8 +14,8 @@ class AdsService {
   Future<Campaign> updateCampaign(int id, Map<String, dynamic> payload) =>
       client.updateCampaign(id, payload);
 
-  Future<List<Creative>> fetchCreatives(int adGroupId) =>
-      client.fetchCreatives(adGroupId);
+  Future<List<Creative>> fetchCreatives({int? adGroupId, int? campaignId}) =>
+      client.fetchCreatives(adGroupId: adGroupId, campaignId: campaignId);
 
   Future<Creative> createCreative(Map<String, dynamic> payload) =>
       client.createCreative(payload);
@@ -23,11 +23,11 @@ class AdsService {
   Future<Creative> updateCreative(int id, Map<String, dynamic> payload) =>
       client.updateCreative(id, payload);
 
-  Future<Forecast> fetchForecast(Map<String, dynamic> payload) =>
-      client.createForecast(payload);
+  Future<Forecast> fetchForecast(int campaignId, Map<String, dynamic> payload) =>
+      client.createForecast(campaignId, payload);
 
-  Future<List<KeywordPrice>> keywordIdeas(String query) =>
-      client.keywordPrices(query);
+  Future<List<KeywordPrice>> keywordIdeas(List<String> keywords) =>
+      client.keywordPrices(keywords);
 
   Future<List<Metric>> fetchMetrics({
     required int campaignId,

@@ -13,7 +13,16 @@ class CampaignController
 {
     public function index(): JsonResponse
     {
-        return response()->json(Campaign::with(['advertiser', 'creatives', 'metrics'])->paginate());
+        return response()->json(
+            Campaign::with(['advertiser', 'creatives', 'metrics', 'targetingRules', 'forecasts'])
+                ->latest()
+                ->paginate()
+        );
+    }
+
+    public function show(Campaign $campaign): JsonResponse
+    {
+        return response()->json($campaign->load(['advertiser', 'creatives', 'metrics', 'targetingRules', 'forecasts']));
     }
 
     public function store(CampaignRequest $request): JsonResponse

@@ -24,6 +24,12 @@ class Campaign extends Model
         'approval_state',
     ];
 
+    protected $appends = [
+        'name',
+        'daily_budget',
+        'lifetime_budget',
+    ];
+
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
@@ -57,5 +63,22 @@ class Campaign extends Model
     public function forecasts()
     {
         return $this->hasMany(Forecast::class);
+    }
+
+    public function getNameAttribute(): string
+    {
+        return $this->title;
+    }
+
+    public function getDailyBudgetAttribute(): float
+    {
+        $days = max($this->start_date?->diffInDays($this->end_date) ?? 1, 1);
+
+        return round($this->budget / $days, 2);
+    }
+
+    public function getLifetimeBudgetAttribute(): float
+    {
+        return (float) $this->budget;
     }
 }

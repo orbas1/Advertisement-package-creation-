@@ -49,7 +49,7 @@ class CreativeBloc extends Cubit<CreativeState> {
   Future<void> load(int adGroupId) async {
     emit(const CreativeState.loading());
     try {
-      final creatives = await repository.creatives(adGroupId);
+      final creatives = await repository.creatives(adGroupId: adGroupId);
       emit(CreativeState.ready(creatives));
     } catch (e) {
       emit(CreativeState.error(e.toString()));
@@ -64,7 +64,7 @@ class CreativeBloc extends Cubit<CreativeState> {
       } else {
         await repository.updateCreative(creative);
       }
-      await load(creative.adGroupId);
+      await load(creative.adGroupId ?? 0);
     } catch (e) {
       emit(CreativeState.error(e.toString()));
     }
@@ -111,7 +111,7 @@ class KeywordPlannerBloc extends Cubit<KeywordPlannerState> {
   Future<void> search(String keyword) async {
     emit(const KeywordPlannerState.loading());
     try {
-      final prices = await repository.keywordPrices(keyword);
+      final prices = await repository.keywordPrices([keyword]);
       emit(KeywordPlannerState.ready(keyword, prices));
     } catch (e) {
       emit(KeywordPlannerState.error(e.toString()));
