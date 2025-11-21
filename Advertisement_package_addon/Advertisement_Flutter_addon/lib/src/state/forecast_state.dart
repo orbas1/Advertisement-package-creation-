@@ -34,10 +34,10 @@ class ForecastCubit extends Cubit<ForecastState> {
 
   final AdsService service;
 
-  Future<void> fetch(Map<String, dynamic> payload) async {
+  Future<void> fetch(int campaignId, Map<String, dynamic> payload) async {
     emit(state.copyWith(status: ForecastStatus.loading));
     try {
-      final forecast = await service.fetchForecast(payload);
+      final forecast = await service.fetchForecast(campaignId, payload);
       emit(state.copyWith(status: ForecastStatus.loaded, forecast: forecast));
     } catch (e) {
       emit(state.copyWith(status: ForecastStatus.error, error: e.toString()));

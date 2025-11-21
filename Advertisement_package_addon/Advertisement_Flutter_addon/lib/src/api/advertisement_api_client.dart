@@ -8,15 +8,12 @@ typedef TokenProvider = Future<String?> Function();
 class _Endpoints {
   static const advertisers = '/api/advertisement/advertisers';
   static const campaigns = '/api/advertisement/campaigns';
-  static const adGroups = '/api/advertisement/ad-groups';
   static const creatives = '/api/advertisement/creatives';
-  static const placements = '/api/advertisement/placements';
-  static const targeting = '/api/advertisement/targeting';
-  static const metrics = '/api/advertisement/metrics';
-  static const forecasts = '/api/advertisement/forecasts';
-  static const keywordPrices = '/api/advertisement/keyword-prices';
-  static const affiliateReferrals = '/api/advertisement/affiliate/referrals';
-  static const affiliatePayouts = '/api/advertisement/affiliate/payouts';
+  static const targeting = '/api/advertisement/campaigns';
+  static const metrics = '/api/advertisement/campaigns';
+  static const keywordPlanner = '/api/advertisement/keyword-planner';
+  static const affiliateReferrals = '/api/advertisement/affiliates/referrals';
+  static const affiliatePayouts = '/api/advertisement/affiliates/payouts';
 }
 
 class AdvertisementApiClient {
@@ -32,7 +29,8 @@ class AdvertisementApiClient {
 
   Future<List<Campaign>> fetchCampaigns() async {
     final response = await _get(_Endpoints.campaigns);
-    final data = jsonDecode(response.body) as List<dynamic>;
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    final data = decoded['data'] as List<dynamic>;
     return data.map((c) => Campaign.fromJson(c as Map<String, dynamic>)).toList();
   }
 
@@ -46,9 +44,14 @@ class AdvertisementApiClient {
     return Campaign.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
-  Future<List<Creative>> fetchCreatives(int adGroupId) async {
-    final response = await _get('${_Endpoints.creatives}?ad_group_id=$adGroupId');
-    final data = jsonDecode(response.body) as List<dynamic>;
+  Future<List<Creative>> fetchCreatives({int? adGroupId, int? campaignId}) async {
+    final query = <String, String>{
+      if (adGroupId != null) 'ad_group_id': '$adGroupId',
+      if (campaignId != null) 'campaign_id': '$campaignId',
+    };
+    final response = await _get(_Endpoints.creatives, query: query);
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    final data = decoded['data'] as List<dynamic>;
     return data.map((c) => Creative.fromJson(c as Map<String, dynamic>)).toList();
   }
 
@@ -68,26 +71,32 @@ class AdvertisementApiClient {
     required DateTime end,
   }) async {
     final response = await _get(
-      '${_Endpoints.metrics}?campaign_id=$campaignId&start=${start.toIso8601String()}&end=${end.toIso8601String()}',
+      '${_Endpoints.metrics}/$campaignId/reports',
+      query: {
+        'from': start.toIso8601String(),
+        'to': end.toIso8601String(),
+      },
     );
-    final data = jsonDecode(response.body) as List<dynamic>;
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    final data = decoded['timeseries'] as List<dynamic>;
     return data.map((m) => Metric.fromJson(m as Map<String, dynamic>)).toList();
   }
 
-  Future<Forecast> createForecast(Map<String, dynamic> payload) async {
-    final response = await _post(_Endpoints.forecasts, payload);
+  Future<Forecast> createForecast(int campaignId, Map<String, dynamic> payload) async {
+    final response = await _post('${_Endpoints.campaigns}/$campaignId/forecast', payload);
     return Forecast.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
-  Future<List<KeywordPrice>> keywordPrices(String keyword) async {
-    final response = await _get('${_Endpoints.keywordPrices}?keyword=$keyword');
+  Future<List<KeywordPrice>> keywordPrices(List<String> keywords) async {
+    final response = await _post(_Endpoints.keywordPlanner, {'keywords': keywords});
     final data = jsonDecode(response.body) as List<dynamic>;
     return data.map((k) => KeywordPrice.fromJson(k as Map<String, dynamic>)).toList();
   }
 
   Future<List<AffiliateReferral>> referrals() async {
     final response = await _get(_Endpoints.affiliateReferrals);
-    final data = jsonDecode(response.body) as List<dynamic>;
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    final data = decoded['data'] as List<dynamic>;
     return data.map((r) => AffiliateReferral.fromJson(r as Map<String, dynamic>)).toList();
   }
 
@@ -98,12 +107,13 @@ class AdvertisementApiClient {
 
   Future<List<AffiliatePayout>> payouts() async {
     final response = await _get(_Endpoints.affiliatePayouts);
-    final data = jsonDecode(response.body) as List<dynamic>;
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    final data = decoded['data'] as List<dynamic>;
     return data.map((p) => AffiliatePayout.fromJson(p as Map<String, dynamic>)).toList();
   }
 
-  Future<http.Response> _get(String path) async {
-    final uri = Uri.parse('$baseUrl$path');
+  Future<http.Response> _get(String path, {Map<String, String>? query}) async {
+    final uri = Uri.parse('$baseUrl$path').replace(queryParameters: query);
     final headers = await _headers();
     final response = await _client.get(uri, headers: headers);
     _throwOnError(response);

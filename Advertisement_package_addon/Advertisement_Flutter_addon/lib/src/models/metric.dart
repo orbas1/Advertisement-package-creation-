@@ -7,12 +7,7 @@ class Metric extends Equatable {
     required this.clicks,
     required this.conversions,
     required this.spend,
-    required this.ctr,
-    required this.cpc,
-    required this.cpa,
-    required this.cpm,
-    required this.rangeStart,
-    required this.rangeEnd,
+    required this.recordedAt,
   });
 
   factory Metric.fromJson(Map<String, dynamic> json) {
@@ -22,12 +17,7 @@ class Metric extends Equatable {
       clicks: json['clicks'] as int,
       conversions: json['conversions'] as int,
       spend: (json['spend'] as num).toDouble(),
-      ctr: (json['ctr'] as num).toDouble(),
-      cpc: (json['cpc'] as num).toDouble(),
-      cpa: (json['cpa'] as num).toDouble(),
-      cpm: (json['cpm'] as num).toDouble(),
-      rangeStart: DateTime.parse(json['range_start'] as String),
-      rangeEnd: DateTime.parse(json['range_end'] as String),
+      recordedAt: DateTime.parse(json['recorded_at'] as String),
     );
   }
 
@@ -36,12 +26,12 @@ class Metric extends Equatable {
   final int clicks;
   final int conversions;
   final double spend;
-  final double ctr;
-  final double cpc;
-  final double cpa;
-  final double cpm;
-  final DateTime rangeStart;
-  final DateTime rangeEnd;
+  final DateTime recordedAt;
+
+  double get ctr => impressions == 0 ? 0 : (clicks / impressions) * 100;
+  double get cpc => clicks == 0 ? 0 : spend / clicks;
+  double get cpa => conversions == 0 ? 0 : spend / conversions;
+  double get cpm => impressions == 0 ? 0 : (spend / impressions) * 1000;
 
   Map<String, dynamic> toJson() => {
         'campaign_id': campaignId,
@@ -49,12 +39,7 @@ class Metric extends Equatable {
         'clicks': clicks,
         'conversions': conversions,
         'spend': spend,
-        'ctr': ctr,
-        'cpc': cpc,
-        'cpa': cpa,
-        'cpm': cpm,
-        'range_start': rangeStart.toIso8601String(),
-        'range_end': rangeEnd.toIso8601String(),
+        'recorded_at': recordedAt.toIso8601String(),
       };
 
   @override
@@ -64,11 +49,6 @@ class Metric extends Equatable {
         clicks,
         conversions,
         spend,
-        ctr,
-        cpc,
-        cpa,
-        cpm,
-        rangeStart,
-        rangeEnd,
+        recordedAt,
       ];
 }

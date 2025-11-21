@@ -37,7 +37,7 @@ class KeywordPlannerCubit extends Cubit<KeywordPlannerState> {
   Future<void> search(String query) async {
     emit(state.copyWith(status: KeywordPlannerStatus.loading));
     try {
-      final results = await service.keywordIdeas(query);
+      final results = await service.keywordIdeas([query]);
       emit(state.copyWith(status: KeywordPlannerStatus.loaded, results: results));
     } catch (e) {
       emit(state.copyWith(status: KeywordPlannerStatus.error, error: e.toString()));

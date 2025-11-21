@@ -15,10 +15,12 @@ Route::prefix('api/advertisement')->middleware(['api'])->group(function () {
     Route::put('advertisers/{advertiser}', [AdvertiserController::class, 'update']);
 
     Route::get('campaigns', [CampaignController::class, 'index']);
+    Route::get('campaigns/{campaign}', [CampaignController::class, 'show']);
     Route::post('campaigns', [CampaignController::class, 'store']);
     Route::put('campaigns/{campaign}', [CampaignController::class, 'update']);
     Route::post('campaigns/{campaign}/forecast', [CampaignController::class, 'forecast']);
 
+    Route::get('creatives', [CreativeController::class, 'index']);
     Route::post('creatives', [CreativeController::class, 'store']);
     Route::put('creatives/{creative}', [CreativeController::class, 'update']);
 

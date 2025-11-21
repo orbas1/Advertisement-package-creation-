@@ -13,7 +13,8 @@ class AdvertisementRepository {
       _api.createCampaign(campaign.toJson()..remove('id')..remove('ad_groups'));
   Future<Campaign> updateCampaign(Campaign campaign) => _api.updateCampaign(campaign.id, campaign.toJson());
 
-  Future<List<Creative>> creatives(int adGroupId) => _api.fetchCreatives(adGroupId);
+  Future<List<Creative>> creatives({int? adGroupId, int? campaignId}) =>
+      _api.fetchCreatives(adGroupId: adGroupId, campaignId: campaignId);
   Future<Creative> createCreative(Creative creative) =>
       _api.createCreative(creative.toJson()..remove('id'));
   Future<Creative> updateCreative(Creative creative) => _api.updateCreative(creative.id, creative.toJson());
@@ -21,8 +22,8 @@ class AdvertisementRepository {
   Future<List<Metric>> metrics(int campaignId, DateTime start, DateTime end) =>
       _api.fetchMetrics(campaignId: campaignId, start: start, end: end);
 
-  Future<Forecast> forecast(Forecast draft) => _api.createForecast(draft.toJson());
-  Future<List<KeywordPrice>> keywordPrices(String keyword) => _api.keywordPrices(keyword);
+  Future<Forecast> forecast(Forecast draft) => _api.createForecast(draft.campaignId, draft.toJson());
+  Future<List<KeywordPrice>> keywordPrices(List<String> keywords) => _api.keywordPrices(keywords);
 
   Future<List<AffiliateReferral>> referrals() => _api.referrals();
   Future<AffiliateReferral> createReferral(AffiliateReferral referral) =>
