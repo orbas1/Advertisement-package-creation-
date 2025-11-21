@@ -1,21 +1,48 @@
 import 'package:flutter/material.dart';
 
-import 'views/views.dart';
+import 'models/models.dart';
+import 'pages/ads_home_screen.dart';
+import 'pages/ads_reports_screen.dart';
+import 'pages/campaign_detail_screen.dart';
+import 'pages/campaign_list_screen.dart';
+import 'pages/campaign_wizard_screen.dart';
+import 'pages/creative_edit_screen.dart';
+import 'pages/creative_list_screen.dart';
+import 'pages/forecast_screen.dart';
+import 'pages/keyword_planner_screen.dart';
 
-class AdsMenuItem {
-  const AdsMenuItem({required this.title, required this.icon, required this.builder});
+class MenuItem {
+  const MenuItem({required this.title, required this.icon, required this.route});
 
   final String title;
   final IconData icon;
-  final WidgetBuilder builder;
+  final String route;
 }
 
-const defaultAdsMenu = <AdsMenuItem>[
-  AdsMenuItem(title: 'Ads Dashboard', icon: Icons.dashboard, builder: AdsDashboardPage.builder),
-  AdsMenuItem(title: 'Campaigns', icon: Icons.campaign, builder: CampaignListPage.builder),
-  AdsMenuItem(title: 'Creatives', icon: Icons.movie, builder: CreativeEditorPage.builder),
-  AdsMenuItem(title: 'Analytics', icon: Icons.show_chart, builder: AnalyticsPage.builder),
-  AdsMenuItem(title: 'Forecast', icon: Icons.trending_up, builder: ForecastPage.builder),
-  AdsMenuItem(title: 'Keyword Planner', icon: Icons.search, builder: KeywordPlannerPage.builder),
-  AdsMenuItem(title: 'Affiliates', icon: Icons.group, builder: AffiliateDashboardPage.builder),
+final List<MenuItem> adsMenuItems = [
+  const MenuItem(title: 'Ads Manager', icon: Icons.campaign_outlined, route: AdsHomeScreen.routeName),
+  const MenuItem(title: 'Campaigns', icon: Icons.list_alt_outlined, route: CampaignListScreen.routeName),
+  const MenuItem(title: 'Keyword Planner', icon: Icons.search, route: KeywordPlannerScreen.routeName),
+  const MenuItem(title: 'Forecast', icon: Icons.trending_up, route: ForecastScreen.routeName),
+  const MenuItem(title: 'Reports', icon: Icons.analytics_outlined, route: AdsReportsScreen.routeName),
 ];
+
+Map<String, WidgetBuilder> buildAdsRoutes() {
+  return {
+    AdsHomeScreen.routeName: (_) => const AdsHomeScreen(),
+    CampaignListScreen.routeName: (_) => const CampaignListScreen(),
+    CampaignWizardScreen.routeName: (_) => const CampaignWizardScreen(),
+    CreativeListScreen.routeName: (_) => const CreativeListScreen(),
+    CreativeEditScreen.routeName: (_) => const CreativeEditScreen(),
+    KeywordPlannerScreen.routeName: (_) => const KeywordPlannerScreen(),
+    ForecastScreen.routeName: (_) => const ForecastScreen(),
+    AdsReportsScreen.routeName: (_) => const AdsReportsScreen(),
+    '/ads/campaigns/:id': (context) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is Campaign) {
+        return CampaignDetailScreen(campaign: args);
+      }
+      return const Scaffold(body: Center(child: Text('Campaign not provided')));
+    },
+  };
+}
